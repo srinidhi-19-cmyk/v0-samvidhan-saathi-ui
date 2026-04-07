@@ -13,8 +13,8 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { Switch } from "@/components/ui/switch"
-import { useLanguage, type Language } from "@/context/language-context"
-import { useAccessibility } from "@/context/accessibility-context"
+import { useLanguage, type Language } from "../context/language-context"
+import { useAccessibility } from "../context/accessibility-context"
 import { cn } from "@/lib/utils"
 
 // Ashoka Chakra SVG component

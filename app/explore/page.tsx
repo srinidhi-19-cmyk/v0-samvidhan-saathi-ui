@@ -14,8 +14,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { useLanguage } from "@/context/language-context"
-import { useAccessibility } from "@/context/accessibility-context"
+import { useLanguage } from "../../context/language-context"
+import { useAccessibility } from "../../context/accessibility-context"
 import { cn } from "@/lib/utils"
 import {
   Scale,
