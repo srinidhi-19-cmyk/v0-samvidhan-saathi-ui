@@ -1,451 +1,422 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Navbar } from "@/components/navbar"
-import { StepWizard } from "@/components/step-wizard"
 import { ResultCard } from "@/components/result-card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+import { Card, CardContent } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import { useLanguage } from "../../context/language-context"
 import { cn } from "@/lib/utils"
 import {
-  GraduationCap,
-  Building2,
-  Shield,
-  Landmark,
-  ArrowRight,
+  Send,
+  Mic,
+  MicOff,
   ArrowLeft,
   Loader2,
   Scale,
-  MessageSquare,
-  Lock,
+  Shield,
+  Building,
+  Megaphone,
   Users,
-  Eye,
+  FileText,
+  ChevronRight,
 } from "lucide-react"
-import Link from "next/link"
 
-const steps = [
-  { title: "Situation", description: "Select context" },
-  { title: "Issue", description: "Identify problem" },
-  { title: "Details", description: "Add conditions" },
-  { title: "Results", description: "View analysis" },
-]
+interface Message {
+  id: string
+  type: 'user' | 'system'
+  content: string
+  timestamp: Date
+}
 
-const situations = [
-  {
-    id: "education",
-    label: "Education",
-    icon: GraduationCap,
-    description: "Schools, colleges, admissions",
-  },
-  {
-    id: "workplace",
-    label: "Workplace",
-    icon: Building2,
-    description: "Employment, discrimination",
-  },
-  {
-    id: "police",
-    label: "Police",
-    icon: Shield,
-    description: "Arrests, detention, rights",
-  },
-  {
-    id: "government",
-    label: "Government",
-    icon: Landmark,
-    description: "Public services, officials",
-  },
-]
-
-const issues = [
-  {
-    id: "speech",
-    label: "Freedom of Speech",
-    icon: MessageSquare,
-    description: "Expression and opinion",
-  },
-  {
-    id: "equality",
-    label: "Right to Equality",
-    icon: Users,
-    description: "Non-discrimination",
-  },
-  {
-    id: "arrest",
-    label: "Arrest & Detention",
-    icon: Lock,
-    description: "Legal procedures",
-  },
-  {
-    id: "privacy",
-    label: "Right to Privacy",
-    icon: Eye,
-    description: "Personal information",
-  },
+const quickStartScenarios = [
+  { id: 'arrest', icon: Shield },
+  { id: 'speech', icon: Megaphone },
+  { id: 'workplace', icon: Building },
+  { id: 'govt', icon: FileText },
+  { id: 'protest', icon: Users },
 ]
 
 export default function AnalyzePage() {
-  const [currentStep, setCurrentStep] = useState(0)
-  const [selectedSituation, setSelectedSituation] = useState<string | null>(null)
-  const [selectedIssue, setSelectedIssue] = useState<string | null>(null)
-  const [additionalDetails, setAdditionalDetails] = useState({
-    location: "",
-    severity: "",
-    hasEvidence: false,
-    isRecurring: false,
-  })
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const { t } = useLanguage()
+  const [messages, setMessages] = useState<Message[]>([])
+  const [inputValue, setInputValue] = useState("")
+  const [isTyping, setIsTyping] = useState(false)
+  const [isListening, setIsListening] = useState(false)
   const [showResults, setShowResults] = useState(false)
+  const [detectedDomain, setDetectedDomain] = useState<string | null>(null)
+  const [keywords, setKeywords] = useState<string[]>([])
+  const [progress, setProgress] = useState(0)
+  const [evaluatingArticle, setEvaluatingArticle] = useState<string | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const handleNext = () => {
-    if (currentStep === 2) {
-      // Start analysis
-      setIsAnalyzing(true)
-      setTimeout(() => {
-        setIsAnalyzing(false)
-        setShowResults(true)
-        setCurrentStep(3)
-      }, 2000)
-    } else {
-      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  // Initialize with welcome message
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcomeMessage: Message = {
+        id: '1',
+        type: 'system',
+        content: "Welcome to Samvidhan Saathi. Please describe your situation in detail, and I'll help you understand your constitutional rights.",
+        timestamp: new Date(),
+      }
+      setMessages([welcomeMessage])
+    }
+  }, [messages.length])
+
+  const handleSend = () => {
+    if (!inputValue.trim()) return
+
+    // Add user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      type: 'user',
+      content: inputValue,
+      timestamp: new Date(),
+    }
+    setMessages(prev => [...prev, userMessage])
+    setInputValue("")
+
+    // Simulate AI response
+    setIsTyping(true)
+    setDetectedDomain("Police & Arrest")
+    setKeywords(["arrest", "detention", "rights"])
+    setProgress(25)
+    setEvaluatingArticle("Article 22")
+
+    setTimeout(() => {
+      const systemMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'system',
+        content: "I understand you're describing a situation involving detention or arrest. To provide accurate guidance, I need to ask: Were you informed of the grounds of your arrest at the time of detention?",
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, systemMessage])
+      setIsTyping(false)
+      setProgress(50)
+    }, 1500)
+  }
+
+  const handleQuickStart = (scenarioId: string) => {
+    const scenarioKey = `analyze.quick.${scenarioId}` as const
+    const scenarioText = t(scenarioKey)
+    setInputValue(scenarioText)
+  }
+
+  const simulateAnalysis = () => {
+    setIsTyping(true)
+    setProgress(75)
+    setEvaluatingArticle("Article 22(1), 22(2)")
+
+    setTimeout(() => {
+      setProgress(100)
+      setShowResults(true)
+      setIsTyping(false)
+    }, 2000)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (messages.length >= 3) {
+        simulateAnalysis()
+      } else {
+        handleSend()
+      }
     }
   }
 
-  const handleBack = () => {
-    if (currentStep === 3) {
-      setShowResults(false)
-    }
-    setCurrentStep((prev) => Math.max(prev - 1, 0))
-  }
-
-  const canProceed = () => {
-    switch (currentStep) {
-      case 0:
-        return selectedSituation !== null
-      case 1:
-        return selectedIssue !== null
-      case 2:
-        return true
-      default:
-        return false
-    }
+  const toggleVoiceInput = () => {
+    setIsListening(!isListening)
+    // Voice input would be implemented here
   }
 
   const resetAnalysis = () => {
-    setCurrentStep(0)
-    setSelectedSituation(null)
-    setSelectedIssue(null)
-    setAdditionalDetails({
-      location: "",
-      severity: "",
-      hasEvidence: false,
-      isRecurring: false,
-    })
+    setMessages([])
     setShowResults(false)
+    setDetectedDomain(null)
+    setKeywords([])
+    setProgress(0)
+    setEvaluatingArticle(null)
   }
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Analyze Your Situation
-          </h1>
-          <p className="text-muted-foreground">
-            Get AI-powered analysis of your legal situation based on the Constitution
-          </p>
-        </div>
+      <main className="pt-20 lg:pt-24 pb-20 lg:pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-8 page-enter">
+            <h1 className="heading-display text-3xl sm:text-4xl text-foreground mb-2">
+              {t('analyze.title')}
+            </h1>
+            <p className="text-muted-foreground">
+              Describe your situation and get AI-powered constitutional analysis
+            </p>
+          </div>
 
-        {/* Step Progress */}
-        <div className="max-w-3xl mx-auto mb-12">
-          <StepWizard steps={steps} currentStep={currentStep} />
-        </div>
-
-        {/* Step Content */}
-        <div className="max-w-3xl mx-auto">
-          {/* Loading State */}
-          {isAnalyzing && (
-            <Card className="animate-scale-in">
-              <CardContent className="flex flex-col items-center justify-center py-16">
-                <div className="relative">
-                  <div className="h-20 w-20 rounded-full border-4 border-muted animate-pulse" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Scale className="h-8 w-8 text-accent animate-pulse" />
-                  </div>
-                </div>
-                <div className="mt-6 text-center">
-                  <p className="text-lg font-medium text-foreground">
-                    Analyzing your situation...
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Mapping to relevant constitutional articles
-                  </p>
-                </div>
-                <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Processing with AI
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Step 1: Select Situation */}
-          {currentStep === 0 && !isAnalyzing && (
-            <div className="space-y-4 animate-fade-in-up">
-              <h2 className="text-xl font-semibold text-foreground text-center mb-6">
-                What is the context of your situation?
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {situations.map((situation) => {
-                  const Icon = situation.icon
-                  const isSelected = selectedSituation === situation.id
-                  return (
-                    <button
-                      key={situation.id}
-                      onClick={() => setSelectedSituation(situation.id)}
-                      className={cn(
-                        "flex items-start gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200",
-                        "hover:border-accent/50 hover:bg-accent/5",
-                        isSelected
-                          ? "border-accent bg-accent/10"
-                          : "border-border/50 bg-card"
-                      )}
-                    >
+          {!showResults ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Chat Interface - Left/Main */}
+              <div className="lg:col-span-2">
+                <Card className="h-[600px] flex flex-col rounded-2xl border-2 border-border overflow-hidden">
+                  {/* Messages Area */}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {messages.map((message) => (
                       <div
+                        key={message.id}
                         className={cn(
-                          "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors",
-                          isSelected
-                            ? "bg-accent text-accent-foreground"
-                            : "bg-muted text-muted-foreground"
+                          "flex",
+                          message.type === 'user' ? "justify-end" : "justify-start"
                         )}
                       >
-                        <Icon className="h-6 w-6" />
+                        <div
+                          className={cn(
+                            "max-w-[80%] rounded-2xl px-4 py-3",
+                            message.type === 'user'
+                              ? "bg-muted text-foreground chat-bubble-user"
+                              : "bg-card border-2 border-border border-l-4 border-l-primary chat-bubble-system"
+                          )}
+                        >
+                          <p className="text-sm leading-relaxed">{message.content}</p>
+                          <span className="text-[10px] text-muted-foreground mt-1 block">
+                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-foreground">
-                          {situation.label}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          {situation.description}
-                        </p>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          )}
+                    ))}
 
-          {/* Step 2: Select Issue */}
-          {currentStep === 1 && !isAnalyzing && (
-            <div className="space-y-4 animate-fade-in-up">
-              <h2 className="text-xl font-semibold text-foreground text-center mb-6">
-                What type of issue are you facing?
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {issues.map((issue) => {
-                  const Icon = issue.icon
-                  const isSelected = selectedIssue === issue.id
-                  return (
-                    <button
-                      key={issue.id}
-                      onClick={() => setSelectedIssue(issue.id)}
-                      className={cn(
-                        "flex items-start gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200",
-                        "hover:border-accent/50 hover:bg-accent/5",
-                        isSelected
-                          ? "border-accent bg-accent/10"
-                          : "border-border/50 bg-card"
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors",
-                          isSelected
-                            ? "bg-accent text-accent-foreground"
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
-                        <Icon className="h-6 w-6" />
+                    {/* Typing Indicator */}
+                    {isTyping && (
+                      <div className="flex justify-start">
+                        <div className="bg-card border-2 border-border border-l-4 border-l-secondary rounded-2xl px-4 py-3">
+                          <div className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-secondary typing-dot" />
+                            <span className="w-2 h-2 rounded-full bg-secondary typing-dot" />
+                            <span className="w-2 h-2 rounded-full bg-secondary typing-dot" />
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-foreground">
-                          {issue.label}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          {issue.description}
-                        </p>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          )}
+                    )}
 
-          {/* Step 3: Additional Details */}
-          {currentStep === 2 && !isAnalyzing && (
-            <div className="space-y-6 animate-fade-in-up">
-              <h2 className="text-xl font-semibold text-foreground text-center mb-6">
-                Provide additional details
-              </h2>
-              <Card>
-                <CardContent className="space-y-6 pt-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location / State</Label>
-                      <Select
-                        value={additionalDetails.location}
-                        onValueChange={(value) =>
-                          setAdditionalDetails((prev) => ({
-                            ...prev,
-                            location: value,
-                          }))
-                        }
-                      >
-                        <SelectTrigger id="location" className="rounded-xl">
-                          <SelectValue placeholder="Select state" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="telangana">Telangana</SelectItem>
-                          <SelectItem value="andhra">Andhra Pradesh</SelectItem>
-                          <SelectItem value="karnataka">Karnataka</SelectItem>
-                          <SelectItem value="maharashtra">Maharashtra</SelectItem>
-                          <SelectItem value="delhi">Delhi</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="severity">Severity Level</Label>
-                      <Select
-                        value={additionalDetails.severity}
-                        onValueChange={(value) =>
-                          setAdditionalDetails((prev) => ({
-                            ...prev,
-                            severity: value,
-                          }))
-                        }
-                      >
-                        <SelectTrigger id="severity" className="rounded-xl">
-                          <SelectValue placeholder="Select severity" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Low - Informational</SelectItem>
-                          <SelectItem value="medium">
-                            Medium - Needs attention
-                          </SelectItem>
-                          <SelectItem value="high">High - Urgent</SelectItem>
-                          <SelectItem value="critical">
-                            Critical - Immediate
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <div ref={messagesEndRef} />
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between rounded-xl border border-border/50 p-4">
-                      <div>
-                        <Label htmlFor="evidence" className="font-medium">
-                          Do you have evidence?
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
-                          Documents, photos, or witnesses
-                        </p>
+                  {/* Quick Start Chips */}
+                  {messages.length <= 1 && (
+                    <div className="px-4 pb-2">
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {t('analyze.quickstart')}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {quickStartScenarios.map((scenario) => {
+                          const Icon = scenario.icon
+                          const labelKey = `analyze.quick.${scenario.id}` as const
+                          return (
+                            <button
+                              key={scenario.id}
+                              onClick={() => handleQuickStart(scenario.id)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 text-xs font-medium text-foreground transition-colors"
+                            >
+                              <Icon className="w-3.5 h-3.5" />
+                              <span className="truncate max-w-[150px]">{t(labelKey)}</span>
+                            </button>
+                          )
+                        })}
                       </div>
-                      <Switch
-                        id="evidence"
-                        checked={additionalDetails.hasEvidence}
-                        onCheckedChange={(checked) =>
-                          setAdditionalDetails((prev) => ({
-                            ...prev,
-                            hasEvidence: checked,
-                          }))
-                        }
-                      />
                     </div>
+                  )}
 
-                    <div className="flex items-center justify-between rounded-xl border border-border/50 p-4">
-                      <div>
-                        <Label htmlFor="recurring" className="font-medium">
-                          Is this a recurring issue?
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
-                          Has happened multiple times
-                        </p>
-                      </div>
-                      <Switch
-                        id="recurring"
-                        checked={additionalDetails.isRecurring}
-                        onCheckedChange={(checked) =>
-                          setAdditionalDetails((prev) => ({
-                            ...prev,
-                            isRecurring: checked,
-                          }))
-                        }
+                  {/* Input Area */}
+                  <div className="p-4 border-t border-border bg-card">
+                    <div className="relative">
+                      <Textarea
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder={t('analyze.placeholder')}
+                        className="min-h-[80px] pr-24 rounded-xl border-2 border-border resize-none input-focus"
                       />
+                      <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={toggleVoiceInput}
+                          className={cn(
+                            "h-8 w-8 rounded-lg",
+                            isListening && "bg-destructive/10 text-destructive"
+                          )}
+                        >
+                          {isListening ? (
+                            <MicOff className="h-4 w-4" />
+                          ) : (
+                            <Mic className="h-4 w-4" />
+                          )}
+                        </Button>
+                        <Button
+                          size="icon"
+                          onClick={messages.length >= 3 ? simulateAnalysis : handleSend}
+                          disabled={!inputValue.trim() && messages.length < 3}
+                          className="h-8 w-8 rounded-lg bg-primary hover:bg-primary/90"
+                        >
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                </Card>
+              </div>
 
-          {/* Step 4: Results */}
-          {currentStep === 3 && showResults && !isAnalyzing && (
-            <div className="space-y-6 animate-fade-in-up">
+              {/* Context Panel - Right */}
+              <div className="space-y-4">
+                {/* Domain Detection */}
+                <Card className="rounded-2xl border-2 border-border">
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                      {t('analyze.context.domain')}
+                    </h3>
+                    {detectedDomain ? (
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-5 h-5 text-primary" />
+                        <span className="font-medium text-foreground">{detectedDomain}</span>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Waiting for input...</p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Keywords */}
+                <Card className="rounded-2xl border-2 border-border">
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                      {t('analyze.context.keywords')}
+                    </h3>
+                    {keywords.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {keywords.map((keyword) => (
+                          <Badge key={keyword} variant="secondary" className="bg-primary/10 text-primary border-0">
+                            {keyword}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No keywords detected</p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Progress */}
+                <Card className="rounded-2xl border-2 border-border">
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                      {t('analyze.context.progress')}
+                    </h3>
+                    <Progress value={progress} className="h-2 mb-2" />
+                    <p className="text-xs text-muted-foreground">
+                      {progress === 0 && "Waiting for information..."}
+                      {progress === 25 && "Gathering context..."}
+                      {progress === 50 && "Asking clarifying questions..."}
+                      {progress === 75 && "Analyzing against articles..."}
+                      {progress === 100 && "Analysis complete!"}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Evaluating Article */}
+                {evaluatingArticle && (
+                  <Card className="rounded-2xl border-2 border-border">
+                    <CardContent className="p-4">
+                      <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                        {t('analyze.context.article')}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
+                          <Scale className="w-4 h-4 text-secondary" />
+                        </div>
+                        <span className="font-medium text-foreground">{evaluatingArticle}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Analyze Button */}
+                {messages.length >= 2 && !showResults && (
+                  <Button
+                    onClick={simulateAnalysis}
+                    disabled={isTyping}
+                    className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground btn-lift"
+                  >
+                    {isTyping ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        Get Verdict
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* Results View */
+            <div className="max-w-3xl mx-auto space-y-6 page-enter">
+              <Button
+                variant="ghost"
+                onClick={resetAnalysis}
+                className="mb-4 rounded-xl"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                {t('common.back')}
+              </Button>
+
               <div className="text-center mb-8">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/10 text-success text-sm font-medium mb-4">
                   <Scale className="h-4 w-4" />
                   Analysis Complete
                 </div>
-                <h2 className="text-xl font-semibold text-foreground">
-                  Here&apos;s what we found
-                </h2>
               </div>
 
               <ResultCard
-                articleNumber="19(1)(a)"
-                articleTitle="Right to Freedom of Speech and Expression"
-                verdict="valid"
-                explanation="Based on your situation, you have the constitutional right to express your opinion. The scenario you described falls under the protection of Article 19(1)(a), which guarantees freedom of speech and expression to all citizens of India."
+                articleNumber="22(1)"
+                articleTitle="Protection against arrest and detention"
+                verdict="violation"
+                explanation="Based on your description, there appears to be a violation of Article 22(1). Every person who is arrested must be informed of the grounds of arrest as soon as possible. The failure to provide this information constitutes a violation of your fundamental right."
                 reasoning={[
                   {
                     step: 1,
-                    title: "Identified Issue Type",
-                    description:
-                      "Freedom of expression in educational institution",
+                    title: "Identified Issue",
+                    description: "Arrest without being informed of grounds",
                   },
                   {
                     step: 2,
-                    title: "Mapped to Constitutional Article",
-                    description:
-                      "Article 19(1)(a) - Freedom of Speech and Expression",
+                    title: "Mapped to Article",
+                    description: "Article 22(1) - Right to be informed of grounds of arrest",
                   },
                   {
                     step: 3,
-                    title: "Checked Reasonable Restrictions",
-                    description:
-                      "No restrictions under Article 19(2) apply to this case",
+                    title: "Checked Conditions",
+                    description: "Person was arrested but not informed of reasons",
                   },
                   {
                     step: 4,
-                    title: "Final Verdict",
-                    description: "Your rights are protected under the Constitution",
+                    title: "Verdict",
+                    description: "This constitutes a violation of fundamental rights",
                   },
                 ]}
                 onSimplify={() => console.log("Simplify")}
@@ -453,32 +424,30 @@ export default function AnalyzePage() {
               />
 
               <ResultCard
-                articleNumber="14"
-                articleTitle="Right to Equality"
+                articleNumber="22(2)"
+                articleTitle="Right to consult legal practitioner"
                 verdict="depends"
-                explanation="The application of Article 14 depends on additional context. While the Constitution guarantees equality before law, the specific circumstances of your case may require consideration of reasonable classification principles."
+                explanation="Article 22(2) guarantees the right to consult and be defended by a legal practitioner of choice. Whether this was violated depends on whether you were denied access to legal counsel after your arrest."
                 reasoning={[
                   {
                     step: 1,
-                    title: "Identified Secondary Issue",
-                    description: "Potential discrimination based on classification",
+                    title: "Secondary Check",
+                    description: "Right to legal representation",
                   },
                   {
                     step: 2,
-                    title: "Applied Intelligible Differentia Test",
-                    description:
-                      "Checking if classification has rational nexus to objective",
+                    title: "Condition",
+                    description: "Access to lawyer must be provided",
                   },
                   {
                     step: 3,
-                    title: "Context Dependent",
-                    description:
-                      "Need more information about the specific discrimination",
+                    title: "Status",
+                    description: "Need more information about access to counsel",
                   },
                   {
                     step: 4,
                     title: "Recommendation",
-                    description: "Consult legal expert for detailed analysis",
+                    description: "Clarify if legal access was denied",
                   },
                 ]}
                 onSimplify={() => console.log("Simplify")}
@@ -496,42 +465,11 @@ export default function AnalyzePage() {
               </div>
             </div>
           )}
-
-          {/* Navigation Buttons */}
-          {!isAnalyzing && currentStep < 3 && (
-            <div className="flex items-center justify-between mt-8">
-              <Button
-                variant="ghost"
-                onClick={handleBack}
-                disabled={currentStep === 0}
-                className="rounded-xl"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-              <Button
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className="rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground"
-              >
-                {currentStep === 2 ? "Analyze" : "Continue"}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          )}
-
-          {showResults && (
-            <div className="flex justify-center mt-8">
-              <Button asChild variant="ghost" className="rounded-xl">
-                <Link href="/case-studies">
-                  <ArrowRight className="mr-2 h-4 w-4" />
-                  Explore Related Case Studies
-                </Link>
-              </Button>
-            </div>
-          )}
         </div>
       </main>
+
+      {/* Bottom padding for mobile nav */}
+      <div className="h-16 lg:hidden" />
     </div>
   )
 }

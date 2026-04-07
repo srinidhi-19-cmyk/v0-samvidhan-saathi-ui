@@ -2,18 +2,20 @@
 
 import { useState } from "react"
 import { Navbar } from "@/components/navbar"
-import { SearchBar } from "@/components/search-bar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { useLanguage } from "../../context/language-context"
+import { useAccessibility } from "../../context/accessibility-context"
 import { cn } from "@/lib/utils"
 import {
   Scale,
@@ -23,37 +25,39 @@ import {
   FileText,
   Sparkles,
   ChevronRight,
-  Filter,
+  Search,
+  ArrowRight,
 } from "lucide-react"
+import Link from "next/link"
 
 const categories = [
   {
+    id: "all",
+    labelKey: "explore.filter.all",
+    icon: BookOpen,
+    count: 448,
+    color: "bg-muted text-muted-foreground",
+  },
+  {
     id: "fundamental-rights",
-    label: "Fundamental Rights",
+    labelKey: "explore.filter.part3",
     icon: Shield,
     count: 23,
     color: "bg-success/10 text-success",
   },
   {
     id: "dpsp",
-    label: "Directive Principles",
+    labelKey: "explore.filter.part4",
     icon: Target,
     count: 18,
-    color: "bg-accent/10 text-accent",
+    color: "bg-secondary/10 text-secondary",
   },
   {
     id: "amendments",
-    label: "Amendments",
+    labelKey: "explore.filter.amendments",
     icon: FileText,
     count: 105,
     color: "bg-primary/10 text-primary",
-  },
-  {
-    id: "all",
-    label: "All Articles",
-    icon: BookOpen,
-    count: 448,
-    color: "bg-muted text-muted-foreground",
   },
 ]
 
@@ -115,6 +119,20 @@ const articles = [
       "A government school cannot deny admission to a child based on their family's income level.",
   },
   {
+    id: "22",
+    number: "22",
+    title: "Protection against arrest and detention",
+    category: "fundamental-rights",
+    shortDescription:
+      "Provides safeguards against arbitrary arrest and detention, including the right to be informed of grounds of arrest and the right to consult a legal practitioner.",
+    fullExplanation:
+      "Article 22 provides protection against arbitrary arrest and detention. It guarantees that an arrested person must be informed of the grounds of arrest, has the right to consult and be defended by a legal practitioner, and must be produced before a magistrate within 24 hours.",
+    simpleExplanation:
+      "If you are arrested, the police must tell you why, allow you to see a lawyer, and bring you to court within 24 hours.",
+    example:
+      "If police arrest someone and keep them in custody for 3 days without producing them before a magistrate, it violates Article 22.",
+  },
+  {
     id: "32",
     number: "32",
     title: "Remedies for enforcement of fundamental rights",
@@ -159,8 +177,9 @@ const articles = [
 ]
 
 export default function ExplorePage() {
+  const { t } = useLanguage()
+  const { simpleMode, setSimpleMode } = useAccessibility()
   const [selectedCategory, setSelectedCategory] = useState("all")
-  const [simpleMode, setSimpleMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedArticle, setSelectedArticle] = useState<string | null>(null)
 
@@ -182,229 +201,230 @@ export default function ExplorePage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Explore the Constitution
-          </h1>
-          <p className="text-muted-foreground">
-            Browse articles, fundamental rights, and constitutional provisions
-          </p>
-        </div>
+      <main className="pt-20 lg:pt-24 pb-20 lg:pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-8 page-enter">
+            <h1 className="heading-display text-3xl sm:text-4xl text-foreground mb-2">
+              {t('explore.title')}
+            </h1>
+            <p className="text-muted-foreground">
+              Browse articles, fundamental rights, and constitutional provisions
+            </p>
+          </div>
 
-        {/* Search and Filters */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <SearchBar
-            placeholder="Search articles by number or title..."
-            onSearch={setSearchQuery}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar - Categories */}
-          <aside className="lg:col-span-1 space-y-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground mb-4">
-              <Filter className="h-4 w-4" />
-              Categories
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder={t('explore.search')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-14 pl-12 rounded-2xl border-2 border-border bg-card text-base input-focus"
+              />
             </div>
+          </div>
 
-            <div className="space-y-2">
-              {categories.map((category) => {
-                const Icon = category.icon
-                const isSelected = selectedCategory === category.id
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
+          {/* Filter Pills */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {categories.map((category) => {
+              const Icon = category.icon
+              const isSelected = selectedCategory === category.id
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={cn(
+                    "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all",
+                    isSelected
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-card border border-border hover:bg-muted"
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  {t(category.labelKey as keyof typeof t)}
+                  <Badge 
+                    variant="secondary" 
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200",
-                      isSelected
-                        ? "bg-accent/10 border-2 border-accent"
-                        : "bg-card border-2 border-transparent hover:bg-muted/50"
+                      "ml-1 text-xs",
+                      isSelected ? "bg-primary-foreground/20 text-primary-foreground" : ""
                     )}
                   >
-                    <div
-                      className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-lg",
-                        category.color
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1">
-                      <p
-                        className={cn(
-                          "text-sm font-medium",
-                          isSelected ? "text-accent" : "text-foreground"
-                        )}
-                      >
-                        {category.label}
+                    {category.count}
+                  </Badge>
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Sidebar - Simple Mode Toggle */}
+            <aside className="lg:col-span-1 order-2 lg:order-1">
+              <Card className="rounded-2xl border-2 border-border sticky top-24">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="simple-mode" className="font-medium text-sm">
+                        {t('explore.simple')}
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Easy to understand explanations
                       </p>
                     </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {category.count}
-                    </Badge>
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* Simple Mode Toggle */}
-            <Card className="mt-6">
-              <CardContent className="flex items-center justify-between py-4">
-                <div>
-                  <Label htmlFor="simple-mode" className="font-medium text-sm">
-                    Simple Language
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Easy to understand
-                  </p>
-                </div>
-                <Switch
-                  id="simple-mode"
-                  checked={simpleMode}
-                  onCheckedChange={setSimpleMode}
-                />
-              </CardContent>
-            </Card>
-          </aside>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {/* Article Detail View */}
-            {currentArticle ? (
-              <Card className="animate-scale-in">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedArticle(null)}
-                        className="mb-2 -ml-2"
-                      >
-                        <ChevronRight className="h-4 w-4 rotate-180 mr-1" />
-                        Back to list
-                      </Button>
-                      <Badge className="mb-2 bg-accent/10 text-accent hover:bg-accent/20">
-                        Article {currentArticle.number}
-                      </Badge>
-                      <CardTitle className="text-2xl">
-                        {currentArticle.title}
-                      </CardTitle>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-accent" />
-                      <span className="text-xs text-muted-foreground">
-                        AI Simplified
-                      </span>
-                      <Switch
-                        checked={simpleMode}
-                        onCheckedChange={setSimpleMode}
-                      />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Main Explanation */}
-                  <div className="rounded-xl bg-muted/50 p-6">
-                    <h3 className="text-sm font-semibold text-foreground mb-3">
-                      {simpleMode ? "Simple Explanation" : "Detailed Explanation"}
-                    </h3>
-                    <p className="text-foreground leading-relaxed">
-                      {simpleMode
-                        ? currentArticle.simpleExplanation
-                        : currentArticle.fullExplanation}
-                    </p>
-                  </div>
-
-                  {/* Example */}
-                  <div className="rounded-xl border border-border/50 p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Scale className="h-5 w-5 text-accent" />
-                      <h3 className="text-sm font-semibold text-foreground">
-                        Example Scenario
-                      </h3>
-                    </div>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {currentArticle.example}
-                    </p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap gap-3">
-                    <Button variant="outline" className="rounded-xl">
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      View Related Cases
-                    </Button>
-                    <Button variant="outline" className="rounded-xl">
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Ask AI a Question
-                    </Button>
+                    <Switch
+                      id="simple-mode"
+                      checked={simpleMode}
+                      onCheckedChange={setSimpleMode}
+                    />
                   </div>
                 </CardContent>
               </Card>
-            ) : (
-              /* Article List */
-              <div className="space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {filteredArticles.length} articles
-                  </p>
-                </div>
+            </aside>
 
-                <Accordion type="single" collapsible className="space-y-3">
-                  {filteredArticles.map((article, index) => (
-                    <AccordionItem
-                      key={article.id}
-                      value={article.id}
-                      className="border rounded-xl px-4 bg-card animate-fade-in-up data-[state=open]:bg-accent/5"
-                      style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                      <AccordionTrigger className="hover:no-underline py-4">
-                        <div className="flex items-center gap-4 text-left">
-                          <Badge
-                            variant="outline"
-                            className="shrink-0 bg-accent/10 text-accent border-accent/20"
-                          >
-                            {article.number}
-                          </Badge>
-                          <div>
-                            <p className="font-medium text-foreground">
-                              {article.title}
-                            </p>
-                            <p className="text-sm text-muted-foreground line-clamp-1">
-                              {article.shortDescription}
-                            </p>
+            {/* Main Content */}
+            <div className="lg:col-span-3 order-1 lg:order-2">
+              {/* Article Detail View */}
+              {currentArticle ? (
+                <Card className="rounded-2xl border-2 border-border animate-scale-in">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedArticle(null)}
+                          className="mb-3 -ml-2 rounded-xl"
+                        >
+                          <ChevronRight className="h-4 w-4 rotate-180 mr-1" />
+                          {t('common.back')}
+                        </Button>
+                        <Badge className="mb-3 bg-primary/10 text-primary border-0 text-base px-3 py-1">
+                          Article {currentArticle.number}
+                        </Badge>
+                        <CardTitle className="heading-display text-2xl">
+                          {currentArticle.title}
+                        </CardTitle>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Constitutional Text */}
+                    <div className="constitutional-border rounded-xl p-6 bg-muted/30">
+                      <p className="text-legal text-foreground leading-relaxed">
+                        &ldquo;{currentArticle.shortDescription}&rdquo;
+                      </p>
+                    </div>
+
+                    {/* Explanation */}
+                    <div className="rounded-xl bg-card border-2 border-border p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Sparkles className="h-5 w-5 text-secondary" />
+                        <h3 className="heading-ui text-sm font-semibold text-foreground">
+                          {simpleMode ? t('explore.simple') : 'Detailed Explanation'}
+                        </h3>
+                      </div>
+                      <p className="text-foreground leading-relaxed">
+                        {simpleMode
+                          ? currentArticle.simpleExplanation
+                          : currentArticle.fullExplanation}
+                      </p>
+                    </div>
+
+                    {/* Example */}
+                    <div className="rounded-xl bg-primary/5 border border-primary/20 p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Scale className="h-5 w-5 text-primary" />
+                        <h3 className="heading-ui text-sm font-semibold text-foreground">
+                          {t('explore.example')}
+                        </h3>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {currentArticle.example}
+                      </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      <Button asChild className="rounded-xl bg-primary hover:bg-primary/90">
+                        <Link href={`/analyze?article=${currentArticle.number}`}>
+                          {t('explore.analyze')}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline" className="rounded-xl">
+                        <Link href="/case-studies">
+                          <BookOpen className="mr-2 h-4 w-4" />
+                          View Related Cases
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                /* Article List */
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm text-muted-foreground">
+                      Showing {filteredArticles.length} articles
+                    </p>
+                  </div>
+
+                  <Accordion type="single" collapsible className="space-y-3">
+                    {filteredArticles.map((article, index) => (
+                      <AccordionItem
+                        key={article.id}
+                        value={article.id}
+                        className="border-2 border-border rounded-2xl px-4 bg-card data-[state=open]:bg-primary/5 data-[state=open]:border-primary/30"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <AccordionTrigger className="hover:no-underline py-4">
+                          <div className="flex items-center gap-4 text-left">
+                            <Badge
+                              className="shrink-0 bg-primary text-primary-foreground border-0 font-semibold"
+                            >
+                              {article.number}
+                            </Badge>
+                            <div>
+                              <p className="font-medium text-foreground">
+                                {article.title}
+                              </p>
+                              <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
+                                {article.shortDescription}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="pb-4">
-                        <div className="pl-[60px] space-y-4">
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {simpleMode
-                              ? article.simpleExplanation
-                              : article.shortDescription}
-                          </p>
-                          <Button
-                            size="sm"
-                            onClick={() => setSelectedArticle(article.id)}
-                            className="rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground"
-                          >
-                            Read Full Article
-                            <ChevronRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </div>
-            )}
+                        </AccordionTrigger>
+                        <AccordionContent className="pb-4">
+                          <div className="pl-[52px] space-y-4">
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              {simpleMode
+                                ? article.simpleExplanation
+                                : article.shortDescription}
+                            </p>
+                            <Button
+                              size="sm"
+                              onClick={() => setSelectedArticle(article.id)}
+                              className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground"
+                            >
+                              {t('explore.readmore')}
+                              <ChevronRight className="ml-2 h-4 w-4" />
+                            </Button>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>
+
+      {/* Bottom padding for mobile nav */}
+      <div className="h-16 lg:hidden" />
     </div>
   )
 }

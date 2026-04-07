@@ -1,23 +1,39 @@
 import type { Metadata, Viewport } from 'next'
-import { Poppins, Inter } from 'next/font/google'
+import { DM_Sans, Cormorant_Garamond, Syne, Lora } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Providers } from '../components/providers'
 import './globals.css'
 
-const poppins = Poppins({ 
+const dmSans = DM_Sans({ 
   subsets: ["latin"],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-poppins'
+  variable: '--font-dm-sans'
 });
 
-const inter = Inter({ 
+const cormorant = Cormorant_Garamond({ 
   subsets: ["latin"],
-  variable: '--font-inter'
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-cormorant'
+});
+
+const syne = Syne({ 
+  subsets: ["latin"],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-syne'
+});
+
+const lora = Lora({ 
+  subsets: ["latin"],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-lora'
 });
 
 export const metadata: Metadata = {
   title: 'Samvidhan Saathi - Know Your Rights',
   description: 'AI-powered constitutional assistant for real-life situations. Understand your rights, explore the constitution, and learn through interactive case studies.',
   generator: 'v0.app',
+  keywords: ['constitution', 'rights', 'India', 'legal', 'law', 'fundamental rights', 'samvidhan'],
+  authors: [{ name: 'Samvidhan Saathi' }],
   icons: {
     icon: [
       {
@@ -38,7 +54,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0A1F44',
+  themeColor: '#5C7A5F',
   width: 'device-width',
   initialScale: 1,
 }
@@ -49,9 +65,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${cormorant.variable} ${syne.variable} ${lora.variable}`}>
       <body className="font-sans antialiased min-h-screen">
-        {children}
+        <Providers>
+          {children}
+        </Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
