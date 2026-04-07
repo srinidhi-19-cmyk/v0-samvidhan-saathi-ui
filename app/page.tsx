@@ -7,7 +7,6 @@ import { useLanguage } from "../context/language-context"
 import {
   Search,
   BookOpen,
-  Briefcase,
   ArrowRight,
   Brain,
   Scale,
@@ -20,6 +19,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import Image from "next/image"
 
 // Ashoka Chakra watermark component
 function AshokaChakraWatermark() {
@@ -104,31 +104,42 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden gradient-mesh noise-bg">
+      {/* Hero Section with Constitutional Background */}
+      <section className="relative overflow-hidden hero-constitutional-bg">
         <AshokaChakraWatermark />
+        
+        {/* Decorative Constituent Assembly Image - Desktop Only */}
+        <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 w-[350px] h-[450px] z-[1] opacity-20">
+          <Image
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Preamble_to_Constitution_of_India.jpg/800px-Preamble_to_Constitution_of_India.jpg"
+            alt="Indian Constitution Preamble"
+            fill
+            className="object-cover rounded-2xl img-constitutional"
+            unoptimized
+          />
+        </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 lg:pt-36 lg:pb-28">
           <div className="max-w-3xl mx-auto text-center page-enter">
-            {/* Display Heading */}
-            <h1 className="heading-display text-4xl sm:text-5xl lg:text-6xl text-foreground mb-4">
+            {/* Display Heading - Increased sizes */}
+            <h1 className="heading-display text-[2.5rem] sm:text-[3.2rem] lg:text-[5.5rem] text-foreground mb-4">
               {t('hero.title')}
             </h1>
-            <h2 className="heading-display text-3xl sm:text-4xl lg:text-5xl text-primary mb-6">
+            <h2 className="heading-display text-[2rem] sm:text-[2.5rem] lg:text-[4rem] text-primary mb-6">
               {t('hero.subtitle')}
             </h2>
             
-            {/* Subheading */}
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto mb-10 text-pretty">
+            {/* Subheading - Increased sizes */}
+            <p className="text-[1.3rem] sm:text-[1.4rem] lg:text-[1.6rem] text-muted-foreground max-w-xl mx-auto mb-10 text-pretty leading-relaxed">
               {t('hero.description')}
             </p>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons - Increased padding and text */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
               <Button
                 asChild
                 size="lg"
-                className="h-14 px-8 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg btn-lift text-base font-medium"
+                className="h-16 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg btn-lift text-[1.05rem] font-medium"
               >
                 <Link href="/analyze">
                   {t('hero.cta.analyze')}
@@ -139,7 +150,7 @@ export default function HomePage() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="h-14 px-8 rounded-2xl border-2 border-border hover:bg-muted/50 text-base font-medium btn-lift"
+                className="h-16 px-10 rounded-2xl border-2 border-border hover:bg-muted/50 text-[1.05rem] font-medium btn-lift"
               >
                 <Link href="/explore">{t('hero.cta.explore')}</Link>
               </Button>
@@ -154,7 +165,7 @@ export default function HomePage() {
                   placeholder={t('explore.search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-14 pl-12 pr-24 rounded-2xl border-2 border-border bg-card text-base input-focus shadow-sm"
+                  className="h-16 pl-12 pr-24 rounded-2xl border-2 border-border bg-card text-[1.05rem] input-focus shadow-sm"
                 />
                 <div className="absolute right-2 flex items-center gap-2">
                   <Button
@@ -181,16 +192,16 @@ export default function HomePage() {
               return (
                 <div
                   key={feature.title}
-                  className="group p-6 rounded-2xl bg-background border border-border card-hover"
+                  className="group p-6 rounded-2xl bg-background border border-border card-hover parchment-texture"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${feature.color} mb-4`}>
-                    <Icon className="w-6 h-6" />
+                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl ${feature.color} mb-4`}>
+                    <Icon className="w-7 h-7" />
                   </div>
-                  <h3 className="heading-ui text-lg font-semibold text-foreground mb-2">
+                  <h3 className="heading-ui text-[1.4rem] font-semibold text-foreground mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-[1.05rem] text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -200,11 +211,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* How It Works - With Preamble Decoration */}
+      <section className="py-16 lg:py-24 relative preamble-decoration">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <h2 className="heading-display text-3xl sm:text-4xl text-foreground mb-4">
+            <h2 className="heading-display text-[2rem] sm:text-[2.4rem] lg:text-[2.8rem] text-foreground mb-4">
               {t('how.title')}
             </h2>
           </div>
@@ -214,19 +225,19 @@ export default function HomePage() {
             <div className="hidden lg:block absolute top-12 left-[12.5%] right-[12.5%] h-0.5 bg-border" />
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {howItWorks.map((step, index) => (
+              {howItWorks.map((step) => (
                 <div key={step.step} className="relative text-center">
                   {/* Step number */}
                   <div className="relative inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-card border-2 border-border mb-6 mx-auto">
-                    <span className="absolute -top-3 -right-3 flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-secondary-foreground text-sm font-bold">
+                    <span className="absolute -top-3 -right-3 flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-secondary-foreground text-[1rem] font-bold">
                       {step.step}
                     </span>
-                    <span className="text-3xl font-bold text-primary">0{step.step}</span>
+                    <span className="text-[2rem] font-bold text-primary">0{step.step}</span>
                   </div>
-                  <h3 className="heading-ui text-lg font-semibold text-foreground mb-2">
+                  <h3 className="heading-ui text-[1.4rem] font-semibold text-foreground mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-[1.05rem] text-muted-foreground">
                     {step.description}
                   </p>
                 </div>
@@ -240,7 +251,7 @@ export default function HomePage() {
       <section className="py-16 lg:py-24 bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="heading-display text-3xl sm:text-4xl text-foreground mb-4">
+            <h2 className="heading-display text-[2rem] sm:text-[2.4rem] lg:text-[2.8rem] text-foreground mb-4">
               {t('domains.title')}
             </h2>
           </div>
@@ -255,10 +266,10 @@ export default function HomePage() {
                   href={`/analyze?domain=${domain.id}`}
                   className="group flex flex-col items-center p-6 rounded-2xl bg-background border border-border card-hover"
                 >
-                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl ${domain.color} mb-3 transition-transform group-hover:scale-110`}>
-                    <Icon className="w-7 h-7" />
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-xl ${domain.color} mb-3 transition-transform group-hover:scale-110`}>
+                    <Icon className="w-8 h-8" />
                   </div>
-                  <span className="text-sm font-medium text-foreground text-center">
+                  <span className="text-[1.05rem] font-medium text-foreground text-center">
                     {t(domainKey)}
                   </span>
                 </Link>
@@ -294,20 +305,20 @@ export default function HomePage() {
             ].map((item, index) => (
               <div
                 key={index}
-                className={`p-6 rounded-2xl bg-card border-l-4 ${item.color} border border-border shadow-sm`}
+                className={`p-6 rounded-2xl bg-card border-l-4 ${item.color} border border-border shadow-sm parchment-texture`}
               >
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                <p className="text-[1.05rem] text-muted-foreground mb-4 line-clamp-3 relative z-10">
                   &ldquo;{item.scenario}&rdquo;
                 </p>
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-                    item.verdict === 'VIOLATION' ? 'bg-destructive/10 text-destructive' :
-                    item.verdict === 'VALID' ? 'bg-success/10 text-success' :
-                    'bg-warning/10 text-warning'
+                <div className="flex items-center justify-between relative z-10">
+                  <span className={`text-[0.95rem] font-bold px-3 py-1.5 rounded-full ${
+                    item.verdict === 'VIOLATION' ? 'bg-destructive/10 verdict-text-violation' :
+                    item.verdict === 'VALID' ? 'bg-success/10 verdict-text-valid' :
+                    'bg-warning/10 verdict-text-depends'
                   }`}>
                     {item.verdict}
                   </span>
-                  <span className="text-xs text-muted-foreground">{item.article}</span>
+                  <span className="text-[0.95rem] text-muted-foreground">{item.article}</span>
                 </div>
               </div>
             ))}
@@ -324,16 +335,16 @@ export default function HomePage() {
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-success/20 rounded-full blur-3xl" />
 
             <div className="relative z-10 max-w-2xl">
-              <h2 className="heading-display text-2xl md:text-3xl lg:text-4xl text-primary-foreground mb-4">
+              <h2 className="heading-display text-[1.8rem] md:text-[2.4rem] lg:text-[3rem] text-primary-foreground mb-4">
                 Ready to understand your constitutional rights?
               </h2>
-              <p className="text-primary-foreground/80 mb-8 text-lg">
+              <p className="text-primary-foreground/80 mb-8 text-[1.15rem] leading-relaxed">
                 Start analyzing your situation now and get AI-powered guidance based on the Indian Constitution.
               </p>
               <Button
                 asChild
                 size="lg"
-                className="h-14 px-8 rounded-2xl bg-secondary hover:bg-secondary/90 text-secondary-foreground btn-lift"
+                className="h-16 px-10 rounded-2xl bg-secondary hover:bg-secondary/90 text-secondary-foreground btn-lift text-[1.05rem]"
               >
                 <Link href="/analyze">
                   Get Started Free
@@ -345,18 +356,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 border-t border-border">
+      {/* Footer with Parchment Strip */}
+      <footer className="py-12 border-t border-border footer-parchment">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <Scale className="h-6 w-6 text-primary" />
+              <Scale className="h-7 w-7 text-primary" />
               <div>
-                <span className="heading-ui font-semibold text-foreground">Samvidhan Saathi</span>
-                <p className="text-sm text-muted-foreground">{t('footer.tagline')}</p>
+                <span className="heading-ui font-semibold text-foreground text-[1.1rem]">Samvidhan Saathi</span>
+                <p className="text-[0.95rem] text-muted-foreground">{t('footer.tagline')}</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-[0.95rem] text-muted-foreground text-center">
               {t('footer.disclaimer')}
             </p>
           </div>

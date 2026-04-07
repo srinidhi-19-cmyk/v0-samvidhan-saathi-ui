@@ -6,11 +6,11 @@
 :root {
   /* Samvidhan Saathi - Premium Legal Tech Color Palette */
   --background: #FAF8F4;
-  --foreground: #2D2D2D;
+  --foreground: #1A1A1A;
   --card: #FFFFFF;
-  --card-foreground: #2D2D2D;
+  --card-foreground: #1A1A1A;
   --popover: #FFFFFF;
-  --popover-foreground: #2D2D2D;
+  --popover-foreground: #1A1A1A;
   
   /* Primary: Muted Forest Green */
   --primary: #5C7A5F;
@@ -22,19 +22,19 @@
   
   /* Muted */
   --muted: #F5F2ED;
-  --muted-foreground: #888880;
+  --muted-foreground: #555550;
   
   /* Accent: Forest Green */
   --accent: #5C7A5F;
   --accent-foreground: #FFFFFF;
   
-  /* Verdict Colors */
-  --success: #4CAF78;
+  /* Verdict Colors - Bright & Readable */
+  --success: #166534;
   --success-foreground: #FFFFFF;
-  --destructive: #D94F4F;
+  --destructive: #B91C1C;
   --destructive-foreground: #FFFFFF;
-  --warning: #D4A843;
-  --warning-foreground: #2D2D2D;
+  --warning: #92400E;
+  --warning-foreground: #FFFFFF;
   
   --border: #E8E4DC;
   --input: #E8E4DC;
@@ -43,21 +43,33 @@
   /* Charts */
   --chart-1: #5C7A5F;
   --chart-2: #C97B3A;
-  --chart-3: #4CAF78;
-  --chart-4: #D4A843;
-  --chart-5: #D94F4F;
+  --chart-3: #166534;
+  --chart-4: #92400E;
+  --chart-5: #B91C1C;
   
   --radius: 1rem;
   
   /* Sidebar */
   --sidebar: #FAF8F4;
-  --sidebar-foreground: #2D2D2D;
+  --sidebar-foreground: #1A1A1A;
   --sidebar-primary: #5C7A5F;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #F5F2ED;
-  --sidebar-accent-foreground: #2D2D2D;
+  --sidebar-accent-foreground: #1A1A1A;
   --sidebar-border: #E8E4DC;
   --sidebar-ring: #5C7A5F;
+  
+  /* Text Colors */
+  --color-text-primary: #1A1A1A;
+  --color-text-body: #3D3D3A;
+  --color-text-secondary: #555550;
+  
+  /* Font Size Scale - Increased */
+  --text-base: 18px;
+  --text-sm: 15px;
+  --text-xs: 13px;
+  --text-lg: 1.15rem;
+  --text-xl: 1.3rem;
 }
 
 .dark {
@@ -75,11 +87,11 @@
   --muted-foreground: #a0a0a0;
   --accent: #7a9e7d;
   --accent-foreground: #1a1a1f;
-  --success: #5bc485;
+  --success: #22c55e;
   --success-foreground: #1a1a1f;
-  --destructive: #e06060;
+  --destructive: #ef4444;
   --destructive-foreground: #F5F2ED;
-  --warning: #e0b850;
+  --warning: #f59e0b;
   --warning-foreground: #1a1a1f;
   --border: #3a3a42;
   --input: #3a3a42;
@@ -146,29 +158,132 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-size: var(--text-base);
+  }
   body {
     @apply bg-background text-foreground;
+    color: var(--color-text-body);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-text-primary);
+  }
+  p {
+    color: var(--color-text-body);
   }
 }
 
-/* Typography Classes */
+/* Typography Classes - Increased Sizes */
 .heading-display {
   font-family: var(--font-serif);
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.1;
+  color: var(--color-text-primary);
 }
 
 .heading-ui {
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: -0.01em;
+  color: var(--color-text-primary);
 }
 
 .text-legal {
   font-family: var(--font-mono);
   font-style: italic;
   line-height: 1.8;
+  font-size: 1.15rem;
+  color: #2A2A26;
+}
+
+.text-body {
+  color: var(--color-text-body);
+}
+
+.text-secondary-content {
+  color: var(--color-text-secondary);
+}
+
+/* Constitutional Hero Background */
+.hero-constitutional-bg {
+  position: relative;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Constitution_of_India.jpg/1280px-Constitution_of_India.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-constitutional-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(250, 248, 244, 0.88);
+  z-index: 0;
+}
+
+/* Parchment texture for cards */
+.parchment-texture {
+  position: relative;
+}
+
+.parchment-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('https://www.transparenttextures.com/patterns/old-mathematics.png');
+  opacity: 0.04;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Case studies background */
+.supreme-court-bg {
+  position: relative;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Supreme_Court_of_India.jpg/1280px-Supreme_Court_of_India.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.supreme-court-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(250, 248, 244, 0.92);
+  z-index: 0;
+}
+
+/* Preamble decorative image */
+.preamble-decoration {
+  position: relative;
+}
+
+.preamble-decoration::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  height: 350px;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Preamble_to_Constitution_of_India.jpg/800px-Preamble_to_Constitution_of_India.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: sepia(15%) brightness(1.05);
+  opacity: 0.15;
+  pointer-events: none;
+  border-radius: 8px;
+}
+
+/* Image filter for warm tones */
+.img-constitutional {
+  filter: sepia(15%) brightness(1.05);
+}
+
+/* Footer parchment strip */
+.footer-parchment {
+  border-top: 4px solid transparent;
+  border-image: linear-gradient(90deg, transparent, #E8E4DC, #D4C4A8, #E8E4DC, transparent) 1;
 }
 
 /* Glassmorphism */
@@ -280,17 +395,30 @@
   border-color: var(--primary);
 }
 
-/* Verdict banners */
+/* Verdict banners - Bright colors */
 .verdict-valid {
-  background: linear-gradient(135deg, #4CAF78 0%, #3d9463 100%);
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
 }
 
 .verdict-violation {
-  background: linear-gradient(135deg, #D94F4F 0%, #c43c3c 100%);
+  background: linear-gradient(135deg, #B91C1C 0%, #dc2626 100%);
 }
 
 .verdict-depends {
-  background: linear-gradient(135deg, #D4A843 0%, #c49a38 100%);
+  background: linear-gradient(135deg, #92400E 0%, #b45309 100%);
+}
+
+/* Verdict text colors */
+.verdict-text-valid {
+  color: #166534;
+}
+
+.verdict-text-violation {
+  color: #B91C1C;
+}
+
+.verdict-text-depends {
+  color: #92400E;
 }
 
 /* Skeleton loading shimmer */
@@ -466,21 +594,21 @@
   }
 }
 
-/* Large text mode */
+/* Large text mode - increased sizes */
 .large-text {
-  font-size: 1.125em;
+  font-size: 1.2em;
 }
 
 .large-text h1 {
-  font-size: 2.75rem;
+  font-size: 3.5rem;
 }
 
 .large-text h2 {
-  font-size: 2.25rem;
+  font-size: 2.8rem;
 }
 
 .large-text h3 {
-  font-size: 1.75rem;
+  font-size: 2rem;
 }
 
 /* Language fade transition */
