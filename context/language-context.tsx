@@ -446,10 +446,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en')
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
     const saved = localStorage.getItem('samvidhan-language') as Language
     if (saved && ['en', 'te', 'hi'].includes(saved)) {
       setLanguageState(saved)
@@ -465,15 +463,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return translations[language][key] || key
   }
 
-  if (!mounted) {
-    return <>{children}</>
-  }
-
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
-      <div className="lang-transition">
-        {children}
-      </div>
+      {children}
     </LanguageContext.Provider>
   )
 }

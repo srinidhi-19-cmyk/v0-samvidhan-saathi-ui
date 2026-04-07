@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { DM_Sans, Cormorant_Garamond, Syne, Lora } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { Providers } from '@/components/providers'
+import { Providers } from '../components/providers'
 import './globals.css'
 
 const dmSans = DM_Sans({ 
