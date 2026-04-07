@@ -14,10 +14,8 @@ const AccessibilityContext = createContext<AccessibilityContextType | undefined>
 export function AccessibilityProvider({ children }: { children: ReactNode }) {
   const [simpleMode, setSimpleModeState] = useState(false)
   const [largeText, setLargeTextState] = useState(false)
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
     const savedSimple = localStorage.getItem('samvidhan-simple-mode')
     const savedLarge = localStorage.getItem('samvidhan-large-text')
     
@@ -33,10 +31,6 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
   const setLargeText = (value: boolean) => {
     setLargeTextState(value)
     localStorage.setItem('samvidhan-large-text', String(value))
-  }
-
-  if (!mounted) {
-    return <>{children}</>
   }
 
   return (
