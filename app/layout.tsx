@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { DM_Sans, Cormorant_Garamond, Syne, Lora } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { LanguageProvider } from '@/context/language-context'
-import { AccessibilityProvider } from '@/context/accessibility-context'
+import { Providers } from '@/components/providers'
 import './globals.css'
 
 const dmSans = DM_Sans({ 
@@ -68,11 +67,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${cormorant.variable} ${syne.variable} ${lora.variable}`}>
       <body className="font-sans antialiased min-h-screen">
-        <LanguageProvider>
-          <AccessibilityProvider>
-            {children}
-          </AccessibilityProvider>
-        </LanguageProvider>
+        <Providers>
+          {children}
+        </Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
